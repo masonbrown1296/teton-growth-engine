@@ -1,0 +1,30 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Benchmark Senior Living",
+  "sessions": [
+    {
+      "date": "2026-09-28",
+      "contact": "Moulay Elalamy",
+      "identified_by": "email click tracking",
+      "pages_visited": ["product-overview", "how-it-works", "privacy-architecture", "august-health-integration"],
+      "time_on_site": "6:42",
+      "demo_request": false
+    },
+    {
+      "date": "2026-10-01",
+      "contact": "John Hartmayer",
+      "identified_by": "email click tracking",
+      "pages_visited": ["aquinas-case-study", "pricing"],
+      "time_on_site": "2:18",
+      "demo_request": false
+    },
+    {
+      "date": "2026-10-03",
+      "contact": "unknown (Benchmark IP range)",
+      "identified_by": "IP matching",
+      "pages_visited": ["homepage", "product-overview", "sagora-case-study"],
+      "time_on_site": "3:45",
+      "demo_request": false
+    }
+  ]
+}

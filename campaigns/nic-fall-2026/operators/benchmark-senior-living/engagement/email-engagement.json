@@ -1,0 +1,23 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Benchmark Senior Living",
+  "campaign": "NIC Fall 2026 Pre-Event Sequence",
+  "recipients": [
+    {
+      "name": "John Hartmayer",
+      "title": "COO and EVP",
+      "email": "jhartmayer@benchmarkseniorliving.com",
+      "touch_1": {"subject": "The night shift problem nobody talks about", "sent": true, "opened": true, "clicked": false},
+      "touch_2": {"subject": "How Aquinas hit 99.8% adoption across Pennsylvania", "sent": true, "opened": true, "clicked": true, "clicked_link": "aquinas-case-study-page"},
+      "touch_3": {"subject": "15 minutes at NIC?", "sent": true, "opened": false, "clicked": false}
+    },
+    {
+      "name": "Moulay Elalamy",
+      "title": "VP of IT",
+      "email": "melalamy@benchmarkseniorliving.com",
+      "touch_1": {"subject": "The night shift problem nobody talks about", "sent": true, "opened": true, "clicked": true, "clicked_link": "product-architecture-page"},
+      "touch_2": {"subject": "How Aquinas hit 99.8% adoption across Pennsylvania", "sent": true, "opened": true, "clicked": false},
+      "touch_3": {"subject": "15 minutes at NIC?", "sent": true, "opened": true, "clicked": true, "clicked_link": "meeting-booking-link"}
+    }
+  ]
+}

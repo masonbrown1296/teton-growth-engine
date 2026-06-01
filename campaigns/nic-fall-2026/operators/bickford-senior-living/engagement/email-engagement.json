@@ -1,0 +1,23 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Bickford Senior Living",
+  "campaign": "NIC Fall 2026 Pre-Event Sequence",
+  "recipients": [
+    {
+      "name": "Andy Eby",
+      "title": "CEO",
+      "email": "aeby@bickfordseniorliving.com",
+      "touch_1": {"subject": "What changed since we last talked", "sent": true, "opened": true, "clicked": true, "clicked_link": "august-health-integration-page"},
+      "touch_2": {"subject": "74% fewer falls, and that's just the beginning", "sent": true, "opened": true, "clicked": true, "clicked_link": "sagora-case-study-page"},
+      "touch_3": {"subject": "15 minutes at NIC to show you what's new", "sent": true, "opened": true, "clicked": false}
+    },
+    {
+      "name": "Joe Eby",
+      "title": "President",
+      "email": "jeby@bickfordseniorliving.com",
+      "touch_1": {"subject": "What changed since we last talked", "sent": true, "opened": true, "clicked": false},
+      "touch_2": {"subject": "74% fewer falls, and that's just the beginning", "sent": true, "opened": false, "clicked": false},
+      "touch_3": {"subject": "15 minutes at NIC to show you what's new", "sent": true, "opened": false, "clicked": false}
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Bickford Senior Living",
+  "campaign": "NIC Fall 2026 Awareness",
+  "date_range": "2026-09-22 to 2026-10-05",
+  "matched_audience_size": 31,
+  "impressions": 1120,
+  "clicks": 29,
+  "engagement_rate": "2.59%",
+  "spend": 940.00,
+  "engaged_contacts": [
+    {"name": "Andy Eby", "title": "CEO", "action": "clicked post about August Health EHR integration announcement"},
+    {"name": "Simone Pena", "title": "VP of Sales and Marketing", "action": "clicked through to Sagora case study page from sponsored post"}
+  ]
+}

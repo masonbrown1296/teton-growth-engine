@@ -1,0 +1,15 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "company": "Benchmark Senior Living",
+  "lifecycle_stage": "lead",
+  "deal_stage": "new",
+  "lead_score": 45,
+  "days_since_last_activity": 0,
+  "first_touch": "2026-09-20",
+  "first_touch_source": "NIC attendee list import",
+  "demo_requested": false,
+  "demo_completed": false,
+  "intro_call_completed": false,
+  "assigned_rep": "unassigned",
+  "notes": "Tier 1 target. 66-70 communities. SafelyYou customer. VP of IT engaging with content. Attending NIC Fall 2026."
+}

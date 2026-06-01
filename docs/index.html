@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teton Growth Engine / NIC Fall 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #111; background: #fff; line-height: 1.55; font-size: 15px; }
+  a { color: inherit; }
+
+  /* NAV */
+  nav { border-bottom: 1px solid #ddd; padding: 0 32px; display: flex; align-items: center; gap: 32px; position: sticky; top: 0; background: #fff; z-index: 10; }
+  nav .logo { font-weight: 700; font-size: 14px; letter-spacing: .5px; padding: 16px 0; text-transform: uppercase; }
+  nav button { background: none; border: none; font: inherit; padding: 16px 0; cursor: pointer; color: #666; border-bottom: 2px solid transparent; transition: color .15s; }
+  nav button:hover { color: #111; }
+  nav button.active { color: #111; border-bottom-color: #111; font-weight: 600; }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 32px 80px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* TYPOGRAPHY */
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  h2 { font-size: 18px; font-weight: 700; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+  h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; color: #444; }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 0 0 12px 20px; }
+  li { margin-bottom: 4px; }
+  blockquote { border-left: 3px solid #ccc; padding-left: 16px; margin: 12px 0; color: #555; font-style: italic; }
+
+  /* SUBTITLE */
+  .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; gap: 0; margin: 24px 0; flex-wrap: wrap; }
+  .flow-step { flex: 1; min-width: 140px; padding: 16px; border: 1px solid #ddd; text-align: center; position: relative; }
+  .flow-step:not(:last-child)::after { content: "\2192"; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #999; z-index: 1; }
+  .flow-step .flow-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #888; margin-bottom: 4px; }
+  .flow-step .flow-title { font-weight: 700; font-size: 14px; }
+  .flow-step .flow-desc { font-size: 12px; color: #666; margin-top: 4px; }
+
+  /* SCORE BAR */
+  .score-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .score-row:last-child { border-bottom: none; }
+  .score-label { width: 180px; font-weight: 600; }
+  .score-bar-wrap { flex: 1; height: 8px; background: #eee; }
+  .score-bar { height: 100%; background: #111; }
+  .score-pts { width: 50px; text-align: right; font-size: 13px; color: #666; }
+
+  /* SKILL CARDS */
+  .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .skill-card { border: 1px solid #ddd; padding: 20px; }
+  .skill-card h4 { margin: 0 0 6px; font-size: 14px; }
+  .skill-card p { font-size: 13px; color: #555; margin: 0; }
+  .skill-card .skill-tag { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; padding: 2px 6px; border: 1px solid #ccc; color: #888; margin-top: 8px; }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; }
+  .card { border: 1px solid #ddd; padding: 24px; cursor: pointer; transition: border-color .15s; }
+  .card:hover { border-color: #888; }
+  .card h3 { margin: 0 0 4px; font-size: 16px; }
+  .card .meta { font-size: 13px; color: #666; margin-bottom: 12px; }
+  .card .tier { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 3px 8px; border: 1px solid #111; margin-bottom: 12px; }
+  .card .status { font-size: 13px; }
+  .card .status span { font-weight: 600; }
+
+  /* BADGES */
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; padding: 2px 8px; border: 1px solid; margin-right: 6px; }
+  .badge-cold { border-color: #999; color: #666; }
+  .badge-warm { border-color: #111; color: #111; }
+
+  /* TABS (sub-nav within operator pages) */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid #ddd; margin: 24px 0 0; }
+  .tabs button { background: none; border: none; font: inherit; font-size: 13px; padding: 10px 16px; cursor: pointer; color: #666; border-bottom: 2px solid transparent; }
+  .tabs button:hover { color: #111; }
+  .tabs button.active { color: #111; border-bottom-color: #111; font-weight: 600; }
+  .tab-content { display: none; padding-top: 24px; }
+  .tab-content.active { display: block; }
+
+  /* EMAIL BLOCKS */
+  .email { border: 1px solid #eee; padding: 20px 24px; margin-bottom: 16px; }
+  .email .subject { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .email .subject::before { content: "Subject: "; font-weight: 400; color: #888; }
+  .email .body { font-size: 14px; color: #333; white-space: pre-wrap; }
+  .email .contact-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: #888; margin-bottom: 8px; }
+  .email .touch-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
+  /* SIGNAL SUMMARY */
+  .signal-summary { background: #fafafa; border: 1px solid #eee; padding: 16px 20px; margin-bottom: 12px; font-size: 13px; }
+  .signal-summary ul { margin: 6px 0 0 16px; }
+  .signal-summary li { margin-bottom: 2px; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th { text-align: left; font-weight: 600; padding: 8px 12px; border-bottom: 2px solid #ddd; font-size: 12px; text-transform: uppercase; letter-spacing: .3px; color: #666; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ONE PAGER */
+  .one-pager { border: 1px solid #ddd; padding: 32px; }
+  .one-pager h2 { border-bottom: none; margin-top: 24px; }
+  .one-pager h2:first-child { margin-top: 0; }
+  .one-pager .headline { font-size: 20px; font-weight: 700; margin-bottom: 16px; line-height: 1.3; }
+
+  /* LANDING PAGE */
+  .landing-preview { border: 1px solid #ddd; }
+  .landing-preview .lp-hero { padding: 48px 32px; text-align: center; border-bottom: 1px solid #eee; }
+  .landing-preview .lp-hero h2 { border: none; font-size: 28px; margin: 0 0 12px; }
+  .landing-preview .lp-hero p { color: #555; font-size: 16px; max-width: 600px; margin: 0 auto; }
+  .landing-preview .lp-section { padding: 32px; border-bottom: 1px solid #eee; }
+  .landing-preview .lp-section:last-child { border-bottom: none; }
+  .landing-preview .lp-section h3 { margin-top: 0; }
+  .landing-preview .lp-cta { padding: 32px; text-align: center; }
+  .landing-preview .lp-cta .btn { display: inline-block; padding: 12px 32px; border: 2px solid #111; font-weight: 600; font-size: 14px; text-decoration: none; color: #111; }
+
+  /* REPORT SECTIONS */
+  .report-section { margin-bottom: 32px; }
+
+  /* BACK */
+  .back { font-size: 13px; color: #888; cursor: pointer; margin-bottom: 16px; display: inline-block; }
+  .back:hover { color: #111; }
+
+  /* SEPARATOR */
+  hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
+
+  @media (max-width: 700px) {
+    .card-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 16px; gap: 16px; }
+    .container { padding: 24px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Teton Growth Engine</div>
+  <button class="active" data-page="system">System</button>
+  <button data-page="overview">Campaign</button>
+  <button data-page="benchmark">Benchmark</button>
+  <button data-page="bickford">Bickford</button>
+  <button data-page="report">Intelligence</button>
+  <button data-page="landing">Landing Page</button>
+</nav>
+
+<!-- ==================== SYSTEM ==================== -->
+<div class="container">
+<div id="system" class="page active">
+  <h1>Teton Growth Engine</h1>
+  <p class="subtitle">Conference-to-pipeline system that processes operator intelligence and multi-channel engagement signals to produce personalized campaign assets.</p>
+
+  <h2>What This Is</h2>
+  <p>A working prototype of the growth engine logic layer. It takes real operator research and simulated multi-channel engagement data as inputs, runs them through a brand and messaging layer, and produces personalized campaign assets through a set of skills. Two real operators, two completely different situations, two completely different outputs.</p>
+  <p>The system is designed to compound. Brand positioning and skills are permanent and evolve slowly. Each conference campaign gets its own folder with operators, engagement data, and generated outputs. After three cycles, the targeting is sharper, the creative is better, and you know your CAC per tier.</p>
+
+  <h2>How It Works</h2>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-label">Layer 1</div>
+      <div class="flow-title">Brand</div>
+      <div class="flow-desc">Positioning, proof points, persona messaging, competitive landscape</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-label">Layer 2</div>
+      <div class="flow-title">Operator Intel</div>
+      <div class="flow-desc">Verified research profiles, contacts, tech stack, public statements</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-label">Layer 3</div>
+      <div class="flow-title">Engagement</div>
+      <div class="flow-desc">Meta ads, LinkedIn, email opens/clicks, website sessions</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-label">Layer 4</div>
+      <div class="flow-title">Sales Context</div>
+      <div class="flow-desc">Call notes, form fills, HubSpot records, objections raised</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-label">Output</div>
+      <div class="flow-title">Skills</div>
+      <div class="flow-desc">Personalized emails, briefs, reports, landing pages</div>
+    </div>
+  </div>
+  <p>Each skill reads from these layers and produces output that reflects the specific combination of inputs. Same skill, different operator, different output, because the inputs are different.</p>
+
+  <h2>Tier Logic</h2>
+  <p>Operators are classified into tiers based on rules, not a point system. Any single qualifying criterion is enough to trigger a tier.</p>
+  <table>
+    <thead><tr><th>Tier</th><th>Criteria (any one qualifies)</th><th>What They Get</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Tier 1</strong></td><td>20+ communities, OR tech-forward posture, OR competitive displacement opportunity, OR existing sales contact</td><td>Every skill, full contact-level personalization</td></tr>
+      <tr><td><strong>Tier 2</strong></td><td>5-19 communities, OR some tech adoption signals, OR campaign engagement without sales contact</td><td>Pre-event emails and one-pager, persona-matched</td></tr>
+      <tr><td><strong>Tier 3</strong></td><td>Under 5 communities, OR no actionable intelligence</td><td>Default landing page and standard sequence</td></tr>
+    </tbody>
+  </table>
+  <h3>Override Flags</h3>
+  <ul>
+    <li><strong>Stalled deal:</strong> HubSpot shows stalled + 30 days inactive. Triggers different re-engagement approach regardless of tier.</li>
+    <li><strong>Limited intelligence:</strong> No researched profile exists. Caps tier at 2 until a profile is built.</li>
+    <li><strong>Engagement without relationship:</strong> Someone at the company is clicking ads or visiting the site, but there's no sales record. Flag for pipeline addition.</li>
+  </ul>
+  <p style="color:#888; font-size:13px;">These are rules-based criteria. With real pipeline data across multiple cycles, the tier logic gets calibrated against actual conversions: which criteria predicted closed deals. That calibration turns rules into a weighted model over time.</p>
+
+  <h2>Skills</h2>
+  <div class="skill-grid">
+    <div class="skill-card">
+      <h4>Score and Tier</h4>
+      <p>Rules-based tier assignment with override flags for stalled deals, limited intelligence, and engagement without a sales relationship. Outputs tier, rationale, recommended skill sequence, and CRM actions.</p>
+      <span class="skill-tag">Runs first</span>
+    </div>
+    <div class="skill-card">
+      <h4>Pre-Event Sequence</h4>
+      <p>3 emails per contact. Four paths: Cold, Warm, Stalled, Limited Intelligence. Proof point rotation across contacts. Engagement-informed divergence when one contact is hot and another is cold.</p>
+      <span class="skill-tag">Per operator</span>
+    </div>
+    <div class="skill-card">
+      <h4>Post-Event Follow-Up</h4>
+      <p>Cross-references engagement signals across 4 channels. Scores each contact's engagement depth. Classifies as Champion, Researcher, Connector, Blocker, or Ghost. Ghosts get no follow-up.</p>
+      <span class="skill-tag">Per operator</span>
+    </div>
+    <div class="skill-card">
+      <h4>One-Pager Brief</h4>
+      <p>Sales leave-behind tailored to the operator. Three intelligence levels (full, partial, minimal). Proof point deduplication against emails. Competitive displacement and EHR integration sections when applicable.</p>
+      <span class="skill-tag">Per operator</span>
+    </div>
+    <div class="skill-card">
+      <h4>Landing Page Copy</h4>
+      <p>Conference landing page. Default version for all attendees, or operator-specific variant for targeted ads. Proof points selected by acuity mix.</p>
+      <span class="skill-tag">Per campaign</span>
+    </div>
+    <div class="skill-card">
+      <h4>Signal Synthesis</h4>
+      <p>Cross-operator intelligence brief. Creative performance, email analysis, website behavior categorization, champion/blocker identification, pipeline health, budget reallocation recommendations.</p>
+      <span class="skill-tag">Per campaign</span>
+    </div>
+  </div>
+
+  <h2>Campaign Structure</h2>
+  <p>Brand layer and skills live at the top level and persist across campaigns. Each conference gets its own folder.</p>
+  <table>
+    <thead><tr><th>Layer</th><th>Location</th><th>Lifecycle</th></tr></thead>
+    <tbody>
+      <tr><td>Brand positioning</td><td>brand/</td><td>Permanent, evolves slowly</td></tr>
+      <tr><td>Skills</td><td>skills/</td><td>Permanent, iterated per cycle</td></tr>
+      <tr><td>Conference context</td><td>campaigns/[event]/</td><td>Per campaign</td></tr>
+      <tr><td>Operator data</td><td>campaigns/[event]/operators/</td><td>Per campaign</td></tr>
+      <tr><td>Generated outputs</td><td>campaigns/[event]/operators/[name]/output/</td><td>Per campaign</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Production Roadmap</h2>
+
+  <h3>Phase 1: Integration Layer</h3>
+  <p>Replace simulated data with live API pulls. HubSpot API for sales data, Meta Ads API for retargeting metrics, LinkedIn Campaign Manager for audience engagement, email platform for open/click tracking, GA4 for website sessions. Each source normalizes into the existing JSON schemas. The skills don't change. The data layer becomes real.</p>
+
+  <h3>Phase 2: Automation Layer</h3>
+  <p>Replace manual skill invocation with a scheduled pipeline. Weekly data pulls trigger signal synthesis. Campaign timeline triggers skills automatically (T-21 days: score and tier, T-14: pre-event emails, T+2: post-event followup). All generated content goes to a human review queue before sending. The system drafts. Humans approve.</p>
+
+  <h3>Phase 3: Feedback Layer</h3>
+  <p>Actual campaign performance data flows back into the system. Which emails were opened, which CTAs converted, which deals advanced. Over three cycles, this enables proof point selection based on historical performance, subject line testing, and persona response pattern learning. Skill updates are tracked in git. The git history becomes institutional memory.</p>
+
+  <hr>
+  <p style="color:#888; font-size:13px;">This prototype uses real, verified operator research and simulated engagement data. All simulated files are marked. The logic layer works independently of the integration layer by design, so the thinking can be evaluated before the pipes are built.</p>
+</div>
+
+<!-- ==================== CAMPAIGN OVERVIEW ==================== -->
+<div id="overview" class="page">
+  <h1>NIC Fall 2026</h1>
+  <p class="subtitle">Conference-to-pipeline campaign. 2 operators, 6 skills, 10 generated assets.</p>
+
+  <div class="card-grid">
+    <div class="card" onclick="showPage('benchmark')">
+      <div class="tier">Tier 1</div>
+      <span class="badge badge-cold">Cold</span>
+      <h3>Benchmark Senior Living</h3>
+      <p class="meta">66-70 communities &middot; 9 states &middot; SafelyYou customer</p>
+      <table>
+        <tr><td>Pipeline stage</td><td><span style="font-weight:600">New</span></td></tr>
+        <tr><td>Lead score</td><td>45</td></tr>
+        <tr><td>Primary contact</td><td>John Hartmayer, COO</td></tr>
+        <tr><td>Secondary contact</td><td>Moulay Elalamy, VP of IT</td></tr>
+        <tr><td>Competitive dynamic</td><td>SafelyYou displacement</td></tr>
+      </table>
+    </div>
+    <div class="card" onclick="showPage('bickford')">
+      <div class="tier">Tier 1</div>
+      <span class="badge badge-warm">Warm / Stalled</span>
+      <h3>Bickford Senior Living</h3>
+      <p class="meta">60+ communities &middot; 8+ states &middot; SafelyYou + August Health</p>
+      <table>
+        <tr><td>Pipeline stage</td><td><span style="font-weight:600">Stalled (42 days)</span></td></tr>
+        <tr><td>Lead score</td><td>78</td></tr>
+        <tr><td>Primary contact</td><td>Andy Eby, CEO</td></tr>
+        <tr><td>Secondary contact</td><td>Joe Eby, President</td></tr>
+        <tr><td>Competitive dynamic</td><td>SafelyYou displacement + August Health bridge</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Campaign Assets Generated</h2>
+  <table>
+    <thead>
+      <tr><th>Skill</th><th>Benchmark</th><th>Bickford</th><th>Cross-operator</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Score and Tier</td><td>Tier 1</td><td>Tier 1</td><td></td></tr>
+      <tr><td>Pre-Event Emails</td><td>6 emails (2 contacts)</td><td>9 emails (3 contacts)</td><td></td></tr>
+      <tr><td>Post-Event Followup</td><td>3 emails (3 contacts)</td><td>3 emails (3 contacts)</td><td></td></tr>
+      <tr><td>One-Pager Brief</td><td>SafelyYou displacement</td><td>SafelyYou + August Health</td><td></td></tr>
+      <tr><td>Landing Page Copy</td><td></td><td></td><td>Default NIC version</td></tr>
+      <tr><td>Signal Synthesis</td><td></td><td></td><td>Weekly report (Oct 7)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How It Works</h2>
+  <ol>
+    <li>Research an operator and create a profile</li>
+    <li>Drop engagement signals (ad data, email data, web sessions) into the operator's engagement folder</li>
+    <li>Add any sales context (call notes, form fills, HubSpot records) into the sales folder</li>
+    <li>Run a skill against the operator to generate campaign assets</li>
+  </ol>
+  <p>Brand layer and skills are permanent. Each campaign gets its own folder with operators, engagement data, and outputs. The system compounds: after three cycles, the targeting is sharper, the creative is better, and you know your CAC.</p>
+</div>
+
+<!-- ==================== BENCHMARK ==================== -->
+<div id="benchmark" class="page">
+  <span class="back" onclick="showPage('overview')">&larr; Campaign</span>
+  <h1>Benchmark Senior Living</h1>
+  <p class="subtitle">Cold Tier 1 target. 66-70 communities. SafelyYou customer. No prior Teton contact.</p>
+
+  <div class="tabs" data-tabgroup="benchmark">
+    <button class="active" data-tab="b-assessment">Assessment</button>
+    <button data-tab="b-pre-event">Pre-Event Emails</button>
+    <button data-tab="b-post-event">Post-Event Followup</button>
+    <button data-tab="b-one-pager">One-Pager</button>
+  </div>
+
+  <!-- ASSESSMENT -->
+  <div id="b-assessment" class="tab-content active">
+    <h2>Tier Assessment</h2>
+    <table>
+      <tr><td style="width:160px">Tier</td><td><strong>1 (Full Personalization)</strong></td></tr>
+      <tr><td>Pipeline stage</td><td>New</td></tr>
+      <tr><td>Lead score</td><td>45</td></tr>
+      <tr><td>Assigned rep</td><td>Unassigned</td></tr>
+      <tr><td>Demo requested</td><td>No</td></tr>
+    </table>
+
+    <h3>Rationale</h3>
+    <p>Benchmark Senior Living qualifies as Tier 1 on three independent criteria. First, their portfolio of 66-70 communities across nine states far exceeds the 20-community threshold, and active expansion into D.C. and New Jersey adds greenfield installation opportunities. Second, they are verifiably tech-forward: partnerships with MIT AgeLab and the Cambridge Innovation Center's Global Longevity Collective, smart-room-enabled apartments, and a VP of IT who has publicly called for "leveraging AI and predictive models." Third, there is a concrete competitive displacement opportunity. Benchmark is a confirmed SafelyYou customer, and SafelyYou's core product is reactive fall detection with post-event video review.</p>
+
+    <h3>Key Messaging Angle</h3>
+    <p>Benchmark's VP of IT said publicly that the industry can now "focus on care instead of administrative work by leveraging AI and predictive models." Their CEO has said that failing to adopt technology means "becoming a dinosaur." Yet their current fall-detection vendor, SafelyYou, is architecturally reactive.</p>
+    <ul>
+      <li><strong>Predictive vs. reactive.</strong> SafelyYou detects falls after they occur. Teton identifies deteriorating mobility, irregular sleep patterns, and changes in activity levels before a fall happens.</li>
+      <li><strong>Privacy architecture.</strong> SafelyYou sends video to the cloud. Teton processes everything on-edge with no video leaving the room.</li>
+      <li><strong>Ambient breadth.</strong> Teton covers falls, sleep, mobility, respiration, and staff interactions across all acuity levels.</li>
+      <li><strong>VBC infrastructure.</strong> Continuous ambient data is the infrastructure layer that makes value-based care reporting possible.</li>
+      <li><strong>Greenfield expansion.</strong> New D.C. and NJ communities are opportunities to install Teton from day one.</li>
+    </ul>
+
+    <h3>Target Contacts</h3>
+    <table>
+      <thead><tr><th>Priority</th><th>Name</th><th>Title</th><th>Angle</th></tr></thead>
+      <tbody>
+        <tr><td>Primary</td><td>John Hartmayer</td><td>COO and EVP</td><td>Portfolio-wide visibility, liability reduction, staff efficiency</td></tr>
+        <tr><td>Secondary</td><td>Moulay Elalamy</td><td>VP of IT</td><td>Edge compute architecture, privacy model, predictive capabilities</td></tr>
+        <tr><td>Tertiary</td><td>TBD (clinical leader)</td><td>RDRC or equivalent</td><td>Fall prevention vs. detection, staff burden, documentation</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Recommended Approach</h3>
+    <ol>
+      <li>Personalized pre-conference email sequence to Hartmayer and Elalamy</li>
+      <li>Conference meeting request (20-minute in-person demo at NIC)</li>
+      <li>Post-conference follow-up within 48 hours</li>
+      <li>Clinical leader identification via LinkedIn (parallel track)</li>
+    </ol>
+  </div>
+
+  <!-- PRE-EVENT EMAILS -->
+  <div id="b-pre-event" class="tab-content">
+    <h2>Pre-Event Email Sequence</h2>
+    <p class="subtitle">3 emails per contact. Cold operator logic: Problem, Proof, Ask.</p>
+
+    <h3>John Hartmayer, COO and EVP</h3>
+
+    <div class="email">
+      <div class="touch-label">Touch 1: The Problem</div>
+      <div class="subject">Fall detection alone isn't solving the fall problem at 66 communities</div>
+      <div class="body">
+John,
+
+Running 66+ communities across nine states means your night shift teams are making judgment calls with incomplete information every single hour. Even with fall detection cameras in place, you're still finding out about problems after they happen. The incident report lands on your desk the next morning. The pattern that caused it was visible days earlier, but nobody had the data.
+
+Teton gives operations leaders like you a different view. A sensor in each room continuously tracks mobility, sleep, and respiration patterns. When something shifts, your team gets an alert before the fall, not after. No cameras. No wearables. No video leaving the room.
+
+Worth a conversation at NIC this fall?
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 2: The Proof</div>
+      <div class="subject">Sagora cut falls 74% after switching from detection to prediction</div>
+      <div class="body">
+John,
+
+Sagora Senior Living was in a similar position to Benchmark. They had fall detection technology but were still reacting to incidents rather than preventing them. After deploying Teton across two Texas communities, they saw a 74% reduction in falls and 95% faster response times.
+
+The difference is what happens between the falls. Teton tracks mobility and activity patterns continuously, so when a resident's gait deteriorates or sleep rhythm breaks down, your team knows before the fall happens. SafelyYou tells you someone fell. Teton tells you the mobility pattern changed three days ago.
+
+Across all deployments, Teton operators see 5x ROI within the first year and 28% higher staff retention.
+
+Happy to share the full Sagora study.
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 3: The Ask</div>
+      <div class="subject">15 minutes at NIC Fall to show you portfolio-wide visibility</div>
+      <div class="body">
+John,
+
+Teton will be at NIC Fall 2026. I'd like 15 minutes to show you what continuous ambient intelligence looks like across a portfolio the size of Benchmark's. No pitch deck, just a live product walkthrough.
+
+[Book time here: BOOKING_LINK]
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+
+    <hr>
+    <h3>Moulay Elalamy, VP of IT</h3>
+
+    <div class="email">
+      <div class="touch-label">Touch 1: The Problem</div>
+      <div class="subject">Predictive models for senior care require a different data layer</div>
+      <div class="body">
+Moulay,
+
+You wrote that advancing technology "allows us to focus on care instead of administrative work by leveraging AI and predictive models." That's exactly right. But predictive models need continuous, structured data from the care environment itself. Fall detection cameras generate video clips after incidents. That's not a data layer you can build predictions on.
+
+Teton is a physical AI platform that solves this. A sensor and on-edge compute unit in each room runs 3D reconstruction, pose estimation, and action recognition locally. No video ever leaves the room. Only structured events and metrics are transmitted. The fleet is managed through Smith, our open-source tool built in Rust, giving your IT team full transparency.
+
+The architecture was built for teams like yours.
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 2: The Proof</div>
+      <div class="subject">On-edge compute, no cloud video, bidirectional EHR integration</div>
+      <div class="body">
+Moulay,
+
+The two concerns I hear from IT leaders evaluating ambient intelligence are privacy and integration burden. Teton was designed around both.
+
+Privacy: AI models run on device. Raw images are analyzed, structured data is extracted, and raw images are deleted. Incident review shows anonymized 3D reconstructions, never real video. Your residents' data never touches a cloud video pipeline.
+
+Integration: Teton launched bidirectional EHR integration with August Health in February 2026. The sensor is a single install per room. Fleet management runs through Smith with 99%+ uptime, and your team can audit everything.
+
+Aquinas Senior Living in Pennsylvania hit 99.8% adoption across their communities. No training burden, no wearable compliance issues.
+
+Happy to do a technical deep dive whenever useful.
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 3: The Ask</div>
+      <div class="subject">Technical walkthrough at NIC Fall 2026</div>
+      <div class="body">
+Moulay,
+
+Teton will be at NIC Fall 2026. I'd like to show you the edge compute architecture, the Smith fleet management console, and how the EHR integration works in practice. Fifteen minutes, no slides.
+
+[Book time here: BOOKING_LINK]
+
+Best,
+[Rep Name]
+Teton</div>
+    </div>
+  </div>
+
+  <!-- POST-EVENT FOLLOWUP -->
+  <div id="b-post-event" class="tab-content">
+    <h2>Post-Event Follow-Up</h2>
+    <p class="subtitle">Engagement signals cross-referenced across 4 channels. One email per engaged contact.</p>
+
+    <h3>John Hartmayer, COO and EVP</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>Opened and clicked email about Aquinas 99.8% adoption, landing on case study page</li>
+        <li>Clicked Meta ad "74% Fewer Falls. No Cameras. No Wearables." twice</li>
+        <li>Visited Aquinas case study page and pricing page (2:18 session)</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">Aquinas went from one building to three. Here's what changed.</div>
+      <div class="body">
+John,
+
+Wanted to follow up from NIC. Benchmark's growth into D.C. and New Jersey caught my attention, and I think the timing is relevant to something we are seeing across multi-site operators.
+
+Aquinas Senior Living piloted Teton in one Pennsylvania community. Within months, they expanded to three. The reason was straightforward: 99.8% staff adoption with zero training burden. One sensor per room, notifications delivered to devices staff already carry. No wearables, no cameras, nothing for residents or families to object to.
+
+On the clinical side, operators using Teton are seeing 74% fewer falls. Teton flags mobility pattern changes days before a fall happens, so your team intervenes early instead of responding after the fact.
+
+I know Benchmark already invests in fall detection technology. Teton does not replace that investment. It adds the predictive layer that tells your teams where to intervene before an incident occurs.
+
+I would like to walk you through a 20-minute demo focused on multi-community operations. Would any time the week of [DATE] work?
+
+Best,
+[Sender Name]</div>
+    </div>
+
+    <hr>
+    <h3>Moulay Elalamy, VP of IT</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>Clicked through to product architecture page from email</li>
+        <li>Clicked NIC meeting booking link</li>
+        <li>Clicked LinkedIn whitepaper: "From Reactive to Proactive"</li>
+        <li>Deep website session (6:42): product overview, how it works, privacy architecture, August Health integration</li>
+        <li>Highest engagement volume of any Benchmark contact across all channels</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">On-edge compute, no cloud video, open-source fleet management</div>
+      <div class="body">
+Moulay,
+
+Good connecting at NIC. I noticed you spent time with our architecture documentation and wanted to make sure you had the full picture.
+
+IT leaders evaluating ambient monitoring always ask the same thing: what actually leaves the room? With Teton, the answer is structured event data only. The sensor captures visual data including infrared for 24-hour coverage. AI models for 3D reconstruction, pose estimation, and action recognition run entirely on an edge compute unit hardwired in the room. Raw images are analyzed, meaningful data is extracted, and the raw image is deleted on device. No video ever touches your network or a cloud server.
+
+Fleet management runs through Smith, our open-source tool built in Rust. Full transparency into device health, updates, and diagnostics across every community.
+
+On integration, we have a live bidirectional data exchange with August Health, and the architecture is built for EHR interoperability. I know Benchmark's EHR vendor is not publicly confirmed, but I would be happy to walk through our integration approach for your specific stack.
+
+You mentioned in your Benchmark article that the goal is "AI and predictive models" that let teams focus on care instead of administrative work. Teton's ambient data layer was built to do exactly that.
+
+Can I send you the technical whitepaper and schedule 30 minutes to go deeper on architecture?
+
+Best,
+[Sender Name]</div>
+    </div>
+
+    <hr>
+    <h3>Heather Frahm, CMO and EVP</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>Liked Teton's LinkedIn post about Aquinas case study</li>
+        <li>No email engagement (not in email campaign)</li>
+        <li>Light engagement, but worth a touchpoint as internal connector</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">The resident experience story behind 99.8% adoption</div>
+      <div class="body">
+Heather,
+
+Wanted to reach out after NIC. I saw your engagement with the Aquinas case study and thought you might find the full story interesting.
+
+When Aquinas rolled out Teton across their Pennsylvania communities, the adoption number that stood out was 99.8% among residents and families. No wearables to manage, no cameras in rooms, nothing that changes the feel of home. Families appreciated knowing their loved ones had an ambient safety layer without the institutional feel of visible monitoring equipment.
+
+For Benchmark's marketing team, that distinction matters. Teton is a differentiator you can talk about in tours, on your website, and in family conversations. It signals innovation without sacrificing the warmth and dignity that Benchmark is known for.
+
+I would love to send you the Aquinas case study with the full resident experience details. Would that be helpful?
+
+Best,
+[Sender Name]</div>
+    </div>
+  </div>
+
+  <!-- ONE-PAGER -->
+  <div id="b-one-pager" class="tab-content">
+    <h2>Sales One-Pager</h2>
+    <p class="subtitle">Conference leave-behind tailored to Benchmark. Includes SafelyYou displacement framing.</p>
+
+    <div class="one-pager">
+      <div class="headline">Proactive Care Intelligence for 70 Communities and Growing</div>
+
+      <p>Benchmark Senior Living has built a reputation on human connection, earning 15 consecutive years as a Boston Globe Top Place to Work and surpassing 90% census in 2024. As you expand into D.C. and New Jersey, Teton gives your care teams continuous, real-time visibility into every resident room across every community, without adding a single task to their workflow. It is the ambient intelligence layer that turns Moulay Elalamy's vision for "AI and predictive models" into an operational reality.</p>
+
+      <h2>Key Outcomes</h2>
+      <p><strong>74% reduction in falls at Sagora Senior Living.</strong> Sagora's Texas communities went from reactive incident management to proactive pattern detection. Falls dropped by nearly three-quarters within the first year of deployment.</p>
+      <p><strong>95% improvement in staff response time.</strong> When Teton detects a change in a resident's mobility, sleep, or respiration pattern, the right caregiver gets a notification immediately. No waiting for shift change notes.</p>
+      <p><strong>5x ROI within one year.</strong> Across Teton's customer base, operators recoup their investment five times over through reduced fall-related costs, lower liability exposure, and improved staff retention (28% higher retention for operators using Teton).</p>
+
+      <h2>How It Works</h2>
+      <ul>
+        <li><strong>One sensor per room.</strong> A small device and edge compute unit install in each resident room. No wearables for residents to remove, lose, or forget to charge.</li>
+        <li><strong>AI runs on device.</strong> 3D reconstruction, pose estimation, and action recognition all happen on the in-room compute unit. No video ever leaves the room.</li>
+        <li><strong>Continuous ambient intelligence.</strong> Teton interprets mobility, sleep quality, respiration, and staff interactions 24 hours a day.</li>
+        <li><strong>Fleet management built for IT.</strong> Smith, Teton's open-source fleet management tool (built in Rust), gives your IT team full transparency across every community.</li>
+      </ul>
+
+      <h2>Going Beyond SafelyYou</h2>
+      <p>In addition to fall detection, Teton provides continuous ambient intelligence that covers the full spectrum of resident health signals. Where SafelyYou alerts your team after a fall has occurred and reviews video after the fact, Teton identifies the mobility pattern change three days before the fall happens. Teton's privacy architecture works differently: all AI processing runs on device in the resident's room, and no video is ever transmitted to the cloud. For a portfolio expanding into new markets, Teton offers a single platform that replaces point solutions with proactive, predictive care intelligence.</p>
+
+      <hr>
+      <p style="text-align:center; margin-top: 24px;"><strong>See It Live</strong><br>Book a 20-minute demo tailored to Benchmark's operational priorities.<br>[scheduling link placeholder]</p>
+      <p style="text-align:center; color: #888; font-size: 13px; margin-top: 16px;">Teton | Proactive Care Platform for Senior Living<br>[contact info placeholder] | teton.ai</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BICKFORD ==================== -->
+<div id="bickford" class="page">
+  <span class="back" onclick="showPage('overview')">&larr; Campaign</span>
+  <h1>Bickford Senior Living</h1>
+  <p class="subtitle">Warm Tier 1 target. 60+ communities. SafelyYou + August Health customer. Intro call completed, stalled 42 days.</p>
+
+  <div class="tabs" data-tabgroup="bickford">
+    <button class="active" data-tab="k-assessment">Assessment</button>
+    <button data-tab="k-pre-event">Pre-Event Emails</button>
+    <button data-tab="k-post-event">Post-Event Followup</button>
+    <button data-tab="k-one-pager">One-Pager</button>
+  </div>
+
+  <!-- ASSESSMENT -->
+  <div id="k-assessment" class="tab-content active">
+    <h2>Tier Assessment</h2>
+    <table>
+      <tr><td style="width:160px">Tier</td><td><strong>1 (Full Personalization)</strong></td></tr>
+      <tr><td>Pipeline stage</td><td>Stalled (42 days)</td></tr>
+      <tr><td>Lead score</td><td>78</td></tr>
+      <tr><td>First touch</td><td>Aug 5, 2026 (LinkedIn ad)</td></tr>
+      <tr><td>Intro call</td><td>Completed Aug 22</td></tr>
+      <tr><td>Demo</td><td>Requested, not completed</td></tr>
+    </table>
+
+    <h3>Rationale</h3>
+    <p>Bickford qualifies for Tier 1 on every single criterion. They operate 52 to 60+ communities across at least eight states, clearing the 20+ community threshold. Their technology posture is well-documented, with verified deployments of SafelyYou, August Health, AccuShield, and Serviam/HigherPath across the portfolio. There is a direct competitive displacement opportunity against SafelyYou, reinforced by a live EHR integration between Teton and August Health that Bickford already runs. Finally, there is an existing sales relationship: an intro call was completed, a demo was requested but never delivered, and the deal stalled 42 days ago.</p>
+
+    <h3>Key Messaging Angle</h3>
+    <p>Andy Eby has spent three years telling the senior living industry that care is "reactive, expensive, and siloed" and that operators need to "think differently" with AI and data. He invested his own money in August Health because their approach to embedded intelligence is, in his words, "elegant and grounded, not built on hype."</p>
+    <ul>
+      <li><strong>SafelyYou solved detection. Teton solves prediction.</strong> SafelyYou tells Bickford when someone fell. Teton tells Bickford someone is going to fall.</li>
+      <li><strong>August Health is the zero-friction bridge.</strong> Teton data flows bidirectionally into the EHR Bickford already operates. No new system, no switching cost.</li>
+      <li><strong>Not rip-and-replace.</strong> Never ask Andy to abandon SafelyYou. Position Teton as the proactive layer that matches his philosophy.</li>
+      <li><strong>SLTC expansion pipeline.</strong> Every new community needs ambient intelligence from day one.</li>
+    </ul>
+
+    <h3>Target Contacts</h3>
+    <table>
+      <thead><tr><th>Priority</th><th>Name</th><th>Title</th><th>Angle</th></tr></thead>
+      <tbody>
+        <tr><td>Primary</td><td>Andy Eby</td><td>CEO</td><td>Proactive care philosophy, August Health bridge, next layer beyond SafelyYou</td></tr>
+        <tr><td>Secondary</td><td>Joe Eby</td><td>President</td><td>Implementation logistics, ROI, portfolio-wide deployment</td></tr>
+        <tr><td>Tertiary</td><td>Simone Pena</td><td>VP of Sales and Marketing</td><td>Family satisfaction data, census impact, marketing differentiation</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Intro Call Notes (Aug 22)</h3>
+    <blockquote>"We're still reactive. I know when someone fell. I want to know they're going to fall before it happens."</blockquote>
+    <ul>
+      <li>Asked about sleep and respiration monitoring (SafelyYou doesn't do this)</li>
+      <li>Interested in privacy architecture: "The on-edge compute thing is a better story."</li>
+      <li>August Health integration: "That changes things."</li>
+    </ul>
+    <h4>Objections Raised</h4>
+    <ol>
+      <li>Already invested in SafelyYou. Switching cost concern.</li>
+      <li>Staff fatigue from technology rollouts (AccuShield just completed Dec 2025).</li>
+      <li>Budget cycle: significant spend would need to be in 2027 budget.</li>
+    </ol>
+  </div>
+
+  <!-- PRE-EVENT EMAILS -->
+  <div id="k-pre-event" class="tab-content">
+    <h2>Pre-Event Email Sequence</h2>
+    <p class="subtitle">3 emails per contact. Warm operator logic: reference prior conversation, address objections, low-commitment ask.</p>
+
+    <h3>Andy Eby, CEO</h3>
+
+    <div class="email">
+      <div class="touch-label">Touch 1: Reference situation, lead with something new</div>
+      <div class="subject">Teton now sends data directly into August Health</div>
+      <div class="body">
+Andy,
+
+We spoke back in August. You said something that stuck with me: "I know when someone fell. I want to know they're going to fall before it happens."
+
+We didn't reconnect after that call, and I'm not here to relitigate it. But something shipped since then that's relevant to Bickford specifically.
+
+Teton's bidirectional integration with August Health went live in February. Sleep data, mobility trends, respiration patterns, and staff response times now flow directly into the EHR your team already uses. No new system for your staff to learn. No data living in a silo.
+
+Given your investment in August Health, both as a customer and investor, I thought you should see it.
+
+Happy to share a 3-minute walkthrough if useful.
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 2: Address objections from intro call</div>
+      <div class="subject">Teton runs alongside SafelyYou, not instead of it</div>
+      <div class="body">
+Andy,
+
+On our call you raised a fair concern: Bickford already invested in SafelyYou and your team just finished the AccuShield rollout. Another technology deployment is a hard sell internally.
+
+Two things worth knowing.
+
+First, Teton doesn't replace SafelyYou. It layers on top. SafelyYou handles fall detection. Teton handles everything upstream: sleep disruption, mobility decline, respiration changes, predictive alerts. Different problems, complementary tools.
+
+Second, Sagora Senior Living ran both systems simultaneously. Falls dropped 74%. Response times improved 95%. Their staff didn't experience rollout fatigue because Teton requires zero training beyond reading a notification.
+
+You told me senior care is "reactive, expensive, and siloed." SafelyYou addresses the reactive piece for falls. Teton addresses the rest.
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 3: Direct ask for conference meeting</div>
+      <div class="subject">15 minutes at NIC Fall to show you what changed</div>
+      <div class="body">
+Andy,
+
+I'll be at NIC Fall. So will you. I'd like 15 minutes to show you what's different since August, specifically the August Health integration and Samwise, our AI agent that lets care teams pull resident data in plain language.
+
+No pitch deck. Just a live look at what the data layer looks like inside an EHR you already know.
+
+[BOOKING LINK]
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <hr>
+    <h3>Joe Eby, President</h3>
+
+    <div class="email">
+      <div class="touch-label">Touch 1: Reference situation, lead with something new</div>
+      <div class="subject">Update on Teton since our August call</div>
+      <div class="body">
+Joe,
+
+When we spoke in August, you asked about implementation timeline per community and staff training burden. Fair questions, especially with the AccuShield rollout just behind you.
+
+Since then, we've added something that changes the implementation picture for Bickford. Teton now integrates bidirectionally with August Health. That means Teton data, mobility trends, sleep patterns, staff response metrics, flows into the system your teams already use daily. No new software to train on.
+
+Installation is one sensor and one compute unit per room. Aquinas Senior Living expanded from a single community to their full portfolio and hit 99.8% staff adoption. Their teams didn't need training beyond reading a push notification.
+
+Happy to share specifics on what a phased rollout across 60+ communities would look like.
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 2: Address objections from intro call</div>
+      <div class="subject">How Teton deployments work alongside existing tech stacks</div>
+      <div class="body">
+Joe,
+
+Your concern about rolling out another platform after AccuShield makes sense. So here's what a Teton deployment actually looks like operationally.
+
+One room takes under an hour to install. No network dependency. The sensor connects to an on-edge compute unit hardwired in the room. AI runs on device. Your IT team manages the fleet remotely through Smith, our open-source tool built in Rust, with 99%+ uptime.
+
+There's no app for staff to learn. Alerts surface as notifications: "Room 214, mobility pattern changed overnight, check in." That's it.
+
+Operators using Teton see 28% higher staff retention. When your caregivers feel like technology helps them instead of adding to their plate, they stay.
+
+A phased pilot starting with 3 to 5 communities would give you real data before any 2027 budget commitment.
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 3: Direct ask for conference meeting</div>
+      <div class="subject">Quick meeting at NIC Fall on Teton's deployment model</div>
+      <div class="body">
+Joe,
+
+I'll be at NIC Fall and would like 15 minutes to walk through what a phased Teton rollout looks like for a portfolio Bickford's size. Specifically the installation process, the August Health data flow, and the staffing impact numbers from operators already running both Teton and SafelyYou.
+
+No pressure to commit to anything. Just a concrete look at logistics.
+
+[BOOKING LINK]
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <hr>
+    <h3>Simone Pena, VP of Sales and Marketing</h3>
+
+    <div class="email">
+      <div class="touch-label">Touch 1: Reference situation, lead with something new</div>
+      <div class="subject">How Teton data supports family decision-making at move-in</div>
+      <div class="body">
+Simone,
+
+I'm reaching out because Teton may be relevant to your side of the house at Bickford, not just operations.
+
+Operators using Teton generate continuous, verified data on resident wellbeing: sleep quality, mobility trends, response times, daily activity patterns. Families see this during tours and in ongoing reporting. It becomes a differentiator in the sales conversation.
+
+Aquinas Senior Living in Pennsylvania hit a 99.8% resident and family adoption rate. Families didn't just accept the technology. They asked for it.
+
+For a private-pay operator like Bickford competing on quality and transparency, that kind of data gives your sales team something concrete to point to beyond testimonials.
+
+I'd like to share how other operators are using Teton data in their marketing and family engagement. Worth a conversation?
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 2: Address the sales and marketing angle</div>
+      <div class="subject">Outcome data Bickford could use in marketing today</div>
+      <div class="body">
+Simone,
+
+You spent time on our Sagora and Aquinas case study pages recently, so you've seen the headline numbers. They matter for Bickford's marketing specifically.
+
+Operators using Teton can share verified outcomes with prospective families: 74% fewer falls, 95% faster response times, continuous overnight monitoring with no cameras in rooms. For families choosing between communities, that data answers the question "how will you keep my parent safe?" with specifics instead of promises.
+
+Bickford's private-pay model means families are comparing you against every option. Proactive ambient intelligence, documented and shareable, is a competitive advantage your sales team can use in every tour and every follow-up.
+
+The integration with August Health means this data already lives in the system your team knows.
+
+[Sales rep]
+Teton</div>
+    </div>
+
+    <div class="email">
+      <div class="touch-label">Touch 3: Direct ask for conference meeting</div>
+      <div class="subject">15 minutes at NIC Fall on Teton's family-facing data</div>
+      <div class="body">
+Simone,
+
+I'll be at NIC Fall and would appreciate 15 minutes to show you the family-facing side of Teton, specifically the resident wellbeing reports and outcome data that other operators use in their sales process.
+
+Quick, low-commitment conversation. If it's not relevant to how Bickford sells, I'll tell you that honestly.
+
+[BOOKING LINK]
+
+[Sales rep]
+Teton</div>
+    </div>
+  </div>
+
+  <!-- POST-EVENT FOLLOWUP -->
+  <div id="k-post-event" class="tab-content">
+    <h2>Post-Event Follow-Up</h2>
+    <p class="subtitle">Engagement signals cross-referenced with intro call notes. One email per engaged contact.</p>
+
+    <h3>Andy Eby, CEO</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>Opened all 3 pre-event emails. Clicked August Health integration page and Sagora case study.</li>
+        <li>7 retargeting ad clicks, concentrated on "proactive vs. reactive" and "August Health" creatives</li>
+        <li>3 website sessions totaling 17+ minutes: deep product/pricing exploration, privacy architecture, August Health integration</li>
+        <li>Intro call (Aug 22): wants to predict falls, asked about sleep/respiration, said August Health integration "changes things"</li>
+        <li>Went dark 42 days. No response to two follow-ups. But still actively researching.</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">The sleep monitoring question you asked</div>
+      <div class="body">
+Andy,
+
+Good to see you at NIC. I've been thinking about something you said on our call back in August. You asked whether Teton tracks sleep and respiration patterns, because SafelyYou doesn't. The short answer was yes. The longer answer is worth showing you.
+
+Since we last talked, we've shipped a sleep disruption model that flags changes in overnight movement and breathing regularity three to five days before those changes show up in incident reports. For a 60-community operator, that's the kind of early signal that compounds across every building.
+
+You also mentioned that the bidirectional August Health integration "changes things." It's live now. Teton data flows directly into the EHR your team already uses. No new system for your staff to learn, no data living in a separate dashboard.
+
+I know you flagged 2027 budget timing on our call. That actually works. A focused pilot in Q1 at two or three communities would give you real data before any portfolio-wide decision.
+
+Would a 30-minute live demo at one of our active communities work in the next two weeks? I can walk you through exactly what the sleep and respiration monitoring looks like in practice.
+
+Best,
+[Sales rep]</div>
+    </div>
+
+    <hr>
+    <h3>Joe Eby, President</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>Opened 1 of 3 pre-event emails (did not click)</li>
+        <li>2 retargeting ad clicks on "proactive vs. reactive" creative</li>
+        <li>On intro call: asked about implementation timeline and training burden. Concerned about rollout after AccuShield.</li>
+        <li>Progressively disengaging from email sequence</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">The rollout question from our call</div>
+      <div class="body">
+Joe,
+
+Good to see you at NIC. I know one of your questions on our August call was about what it takes to deploy another platform across 60+ communities, especially right after finishing the AccuShield rollout.
+
+Fair concern. With Teton, the deployment is simpler than you'd expect: one sensor and one compute unit per room, hardwired. No network configuration. No resident interaction required. Average install time is under 30 minutes per room. On the staff side, Aquinas Senior Living hit 99.8% adoption across their Pennsylvania communities because there's nothing to learn. Teton sends a notification. Staff reads it. That's the whole workflow.
+
+A pilot at two or three communities would let your operations team validate the install process and training burden before any portfolio-wide conversation. No disruption to what's already working.
+
+Would it make sense to schedule a 20-minute call to walk through the pilot logistics? I can map out a timeline that fits your 2027 planning cycle.
+
+Best,
+[Sales rep]</div>
+    </div>
+
+    <hr>
+    <h3>Simone Pena, VP of Sales and Marketing</h3>
+    <div class="signal-summary">
+      <strong>Signal Summary</strong>
+      <ul>
+        <li>LinkedIn: clicked through to Sagora case study from sponsored post</li>
+        <li>3 retargeting ad clicks on proof point and August Health creatives</li>
+        <li>4-minute website session reading Sagora and Aquinas case studies back to back</li>
+        <li>Focused entirely on clinical outcomes and case studies, not product or pricing</li>
+      </ul>
+    </div>
+    <div class="email">
+      <div class="subject">The outcomes data behind Sagora and Aquinas</div>
+      <div class="body">
+Simone,
+
+Wanted to follow up from NIC. I noticed your team at Bickford has been looking at some of our customer results, and I thought it would be worth putting the full picture in one place.
+
+Sagora Senior Living saw a 74% reduction in falls and 95% improvement in staff response time across their pilot communities in Texas. Aquinas Senior Living expanded from one community to their full Pennsylvania portfolio after hitting 99.8% resident and family adoption.
+
+For a team focused on sales and marketing, those numbers do double duty. They're clinical outcomes, but they're also the kind of proof that families ask about when they're choosing a community. Operators using Teton have concrete data to share with prospective residents and their families during the decision process.
+
+I can send you the full case studies with the methodology and timelines if that would be useful for your team. Just say the word.
+
+Best,
+[Sales rep]</div>
+    </div>
+  </div>
+
+  <!-- ONE-PAGER -->
+  <div id="k-one-pager" class="tab-content">
+    <h2>Sales One-Pager</h2>
+    <p class="subtitle">Conference leave-behind tailored to Bickford. Includes SafelyYou displacement + August Health integration.</p>
+
+    <div class="one-pager">
+      <div class="headline">From Detecting Falls to Preventing Them: Teton for Bickford Senior Living</div>
+
+      <p>You said it yourself: "Senior care today is reactive, expensive, and siloed." SafelyYou solved one piece of that, giving your team visibility into falls after they happen. Teton solves what comes next. Continuous ambient intelligence that monitors mobility, sleep, respiration, and staff response across every room, every shift, across all 60+ Bickford communities, and feeds directly into the August Health EHR you already run.</p>
+
+      <h2>Key Outcomes</h2>
+      <p><strong>74% fewer falls at Sagora Senior Living (Texas).</strong> Sagora's two pilot communities saw falls drop by nearly three-quarters after Teton deployment, with a 95% improvement in staff response time. Before SafelyYou, 92% of Bickford falls went unwitnessed. Teton goes further: instead of documenting the fall, it identifies the mobility pattern change days before one occurs.</p>
+      <p><strong>99.8% resident and family adoption at Aquinas Senior Living (Pennsylvania).</strong> Aquinas expanded from one community to two after their pilot. Staff adoption was nearly universal because Teton doesn't require training beyond reading a notification. After a portfolio-wide AccuShield rollout, the last thing your teams need is another complex deployment.</p>
+      <p><strong>5x ROI within one year.</strong> Operators using Teton see a fivefold return within 12 months, driven by fall reduction, liability mitigation, and a 28% improvement in staff retention. For a family-owned, private-pay operation with a $300M+ expansion pipeline through SLTC, the financial case compounds with every new community.</p>
+
+      <h2>How It Works</h2>
+      <ul>
+        <li><strong>One sensor per room.</strong> A small sensor and edge compute unit installs in each resident room. No wearables, nothing to forget.</li>
+        <li><strong>AI runs on device.</strong> All processing happens on the compute unit in the room. No video ever leaves the room and nothing touches the cloud.</li>
+        <li><strong>Continuous monitoring, not just fall detection.</strong> Teton tracks mobility trends, sleep quality, respiration patterns, and staff interactions 24 hours a day.</li>
+        <li><strong>Fleet management built for scale.</strong> Smith, Teton's open-source fleet management tool, gives IT full transparency across your entire portfolio.</li>
+      </ul>
+
+      <h2>Going Beyond SafelyYou</h2>
+      <p>SafelyYou is good at what it does. Teton does not replace fall detection. It adds the layer SafelyYou was never designed to provide. In addition to fall detection, Teton delivers continuous sleep monitoring, respiration tracking, mobility trend analysis, and predictive alerts that flag risk before an incident happens. SafelyYou reviews video after a fall. Teton shows your care team that a resident's gait changed three days ago, that their nighttime restlessness increased this week, or that staff check-ins on the overnight shift dropped below threshold.</p>
+      <p>This is not a rip-and-replace. SafelyYou can stay. Teton adds the proactive intelligence layer that turns your communities from reactive monitoring into the kind of data-driven, preventive care model you are already building through Centered Care and Serviam.</p>
+
+      <h2>Teton Integrates Directly with August Health</h2>
+      <p>Teton's bidirectional EHR integration with August Health (live since February 2026) means resident insights flow automatically into the system Bickford already uses. Sleep data, mobility trends, respiration changes, and incident documentation appear in August Health without manual entry. No new EHR to learn, no duplicate charting, no switching cost on the data side. As Andy said when he heard about the integration: "That changes things."</p>
+
+      <hr>
+      <p style="text-align:center; margin-top: 24px;"><strong>See It Live</strong><br>We'd like to show you Teton running in a live community, not a demo environment.<br>[Schedule a live community visit]</p>
+      <p style="text-align:center; color: #888; font-size: 13px; margin-top: 16px;">Teton | The proactive care platform for senior living<br>[contact info placeholder] | teton.ai</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== INTELLIGENCE REPORT ==================== -->
+<div id="report" class="page">
+  <span class="back" onclick="showPage('overview')">&larr; Campaign</span>
+  <h1>Weekly Intelligence Brief</h1>
+  <p class="subtitle">October 7, 2026 &middot; Reporting period: September 15 to October 5, 2026</p>
+
+  <h2>What's Working</h2>
+
+  <h3>Top Creatives by CTR</h3>
+  <table>
+    <thead><tr><th>Creative</th><th>Headline</th><th>Operator</th><th>CTR</th><th>Clicks</th></tr></thead>
+    <tbody>
+      <tr><td>proof-sagora-74pct</td><td>"74% Fewer Falls. No Cameras. No Wearables."</td><td>Benchmark</td><td>3.88%</td><td>16</td></tr>
+      <tr><td>proactive-vs-reactive</td><td>"Fall Detection Tells You What Happened. We Tell You What's Coming."</td><td>Bickford</td><td>3.87%</td><td>24</td></tr>
+      <tr><td>august-health-integration</td><td>"Already on August Health? Add Ambient Intelligence in One Click."</td><td>Bickford</td><td>2.79%</td><td>18</td></tr>
+    </tbody>
+  </table>
+  <p>The Sagora 74% proof point and the proactive-vs-reactive framing are essentially tied at the top, both near 3.9% CTR. Creatives with a specific number or a direct contrast between reactive and proactive approaches outperform category-level messaging.</p>
+
+  <h3>Email Performance</h3>
+  <p>Touches 1 and 2 (problem/proof-point-led subject lines) consistently outperformed Touch 3 (direct meeting ask) across both operators. The "night shift problem" subject line earned 100% open rates. The "74% fewer falls" subject line earned clicks from the most engaged contacts.</p>
+
+  <h3>Highest-Engagement Contacts</h3>
+  <table>
+    <thead><tr><th>Contact</th><th>Operator</th><th>Meta Clicks</th><th>Email Opens</th><th>Email Clicks</th><th>Website Time</th><th>Notable</th></tr></thead>
+    <tbody>
+      <tr><td>Moulay Elalamy, VP IT</td><td>Benchmark</td><td>4</td><td>3/3</td><td>2</td><td>6:42</td><td>Booked NIC meeting</td></tr>
+      <tr><td>Andy Eby, CEO</td><td>Bickford</td><td>7</td><td>3/3</td><td>2</td><td>17:13</td><td>Still researching despite 42-day sales silence</td></tr>
+      <tr><td>Simone Pena, VP Sales</td><td>Bickford</td><td>3</td><td>-</td><td>-</td><td>4:05</td><td>Focused on case studies</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What's Not Working</h2>
+
+  <h3>Underperforming Creatives</h3>
+  <table>
+    <thead><tr><th>Creative</th><th>CTR</th><th>Issue</th></tr></thead>
+    <tbody>
+      <tr><td>"99.8% Adoption. Zero Wearables. One Sensor Per Room."</td><td>1.50%</td><td>Adoption messaging too abstract for cold ad impression</td></tr>
+      <tr><td>"What If Your Building Could See What Your Staff Can't?"</td><td>2.09%</td><td>Category-level question without a proof point</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Where Leads Are Stalling</h3>
+  <p><strong>Bickford:</strong> Deal marked "stalled" for 42 days. Andy Eby went dark on sales outreach but has continued engaging with content across every channel (7 Meta clicks, 2 email click-throughs, 3 website sessions including pricing page twice). Andy went dark on direct sales outreach but is still actively researching across every channel.</p>
+  <p><strong>Benchmark:</strong> Has not stalled but has not advanced. No demo requested, no assigned rep. Moulay Elalamy booked an NIC meeting via email, but this hasn't been reflected in HubSpot deal stage.</p>
+
+  <h3>Contacts Gone Dark</h3>
+  <table>
+    <thead><tr><th>Contact</th><th>Operator</th><th>Last Direct Response</th><th>Assessment</th></tr></thead>
+    <tbody>
+      <tr><td>Joe Eby, President</td><td>Bickford</td><td>Aug 22 (intro call)</td><td>May be internal blocker. Implementation concerns.</td></tr>
+      <tr><td>John Hartmayer, COO</td><td>Benchmark</td><td>Oct 1 (website visit)</td><td>Active but not responding to NIC meeting ask</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Pipeline Status</h2>
+  <div class="card-grid">
+    <div class="card" style="cursor:default">
+      <h3>Benchmark Senior Living</h3>
+      <table>
+        <tr><td>Stage</td><td><strong>New</strong> (should be Engaged)</td></tr>
+        <tr><td>Lead score</td><td>45</td></tr>
+        <tr><td>Rep assigned</td><td>No</td></tr>
+        <tr><td>NIC meeting booked</td><td>Yes (Moulay Elalamy)</td></tr>
+        <tr><td>Biggest risk</td><td>No rep assigned, not advancing</td></tr>
+      </table>
+    </div>
+    <div class="card" style="cursor:default">
+      <h3>Bickford Senior Living</h3>
+      <table>
+        <tr><td>Stage</td><td><strong>Stalled</strong> (but actively researching)</td></tr>
+        <tr><td>Lead score</td><td>78</td></tr>
+        <tr><td>Demo completed</td><td>No</td></tr>
+        <tr><td>Days since last content engagement</td><td>5</td></tr>
+        <tr><td>Biggest risk</td><td>42-day sales silence, demo never scheduled</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Recommendations</h2>
+
+  <h3>1. Reallocate Meta budget toward top performers</h3>
+  <p>The top two creatives (Sagora 74% at 3.88% CTR and proactive-vs-reactive at 3.87% CTR) are performing at roughly 2x the rate of the weakest creative. Shift 30-40% of spend away from the Aquinas adoption creative and Physical AI category creative toward the two top performers. Current combined Meta spend: $1,979.70.</p>
+
+  <h3>2. Fix the NIC meeting ask in email sequences</h3>
+  <p>Touch 3 had the worst performance across both operators. The direct meeting ask in a subject line is getting filtered or ignored. Replace with a value-led subject line. Embed the NIC meeting CTA inside the email body after delivering value.</p>
+
+  <h3>3. Create "SafelyYou coexistence" content</h3>
+  <p>Both operators are SafelyYou customers with switching cost concerns. No content asset addresses this directly. Create a positioning piece: "Already Using Fall Detection? Here's What Ambient Intelligence Adds." Not a competitive teardown. Additive framing.</p>
+
+  <h3>4. Assign a rep to Benchmark immediately</h3>
+  <p>Moulay Elalamy booked an NIC meeting. The HubSpot record still shows "unassigned" and "new." Move to "engaged" and assign a rep before NIC.</p>
+
+  <h3>5. Build a second champion at Bickford through Simone Pena</h3>
+  <p>Andy is the champion but has gone dark on sales. Joe appears to be a passive blocker. Simone has shown independent engagement (3 Meta clicks, 4:05 website session on case studies). Add her to a tailored email sequence with marketing-relevant proof points. Route around Joe's objection by building the case from a revenue angle.</p>
+
+  <h3>6. Prepare operator-specific NIC materials</h3>
+  <p><strong>For Benchmark (Moulay):</strong> Technical walkthrough: privacy architecture, August Health integration, on-edge compute. Bring Sagora data.</p>
+  <p><strong>For Bickford (Andy):</strong> Informal, low-pressure. Reference the August Health integration he clicked on. Don't pitch a demo in the first 60 seconds. If possible, arrange a peer-to-peer conversation with a Sagora or Aquinas operator.</p>
+
+  <h2>Cross-Operator Summary</h2>
+  <table>
+    <thead><tr><th>Signal</th><th>Benchmark</th><th>Bickford</th></tr></thead>
+    <tbody>
+      <tr><td>Meta impressions</td><td>1,243</td><td>1,876</td></tr>
+      <tr><td>Meta clicks</td><td>31</td><td>54</td></tr>
+      <tr><td>Meta CTR</td><td>2.49%</td><td>2.88%</td></tr>
+      <tr><td>Meta spend</td><td>$847.20</td><td>$1,132.50</td></tr>
+      <tr><td>LinkedIn impressions</td><td>1,680</td><td>1,120</td></tr>
+      <tr><td>LinkedIn clicks</td><td>38</td><td>29</td></tr>
+      <tr><td>LinkedIn engagement rate</td><td>2.26%</td><td>2.59%</td></tr>
+      <tr><td>LinkedIn spend</td><td>$1,240.00</td><td>$940.00</td></tr>
+      <tr><td>Email open rate</td><td>83%</td><td>67%</td></tr>
+      <tr><td>Email click rate</td><td>50%</td><td>33%</td></tr>
+      <tr><td>Website sessions (identified)</td><td>3 sessions</td><td>5 sessions</td></tr>
+      <tr><td>Website time (identified)</td><td>12:45</td><td>23:06</td></tr>
+      <tr><td>Pipeline stage</td><td>New</td><td>Stalled</td></tr>
+      <tr><td>NIC meeting booked</td><td>Yes</td><td>No</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Combined:</strong> $4,159.70 total ad spend. 152 total ad clicks. 3 contacts actively engaging across multiple channels. 1 meeting booked. 0 demos completed. The campaigns are generating engagement. The gap is on the conversion side: turning that engagement into demos and advancing deal stages. NIC is the window.</p>
+</div>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<div id="landing" class="page">
+  <span class="back" onclick="showPage('overview')">&larr; Campaign</span>
+  <h1>Landing Page Copy</h1>
+  <p class="subtitle">Default NIC Fall 2026 version. For all conference attendees.</p>
+
+  <div class="landing-preview">
+    <div class="lp-hero">
+      <h2>See What's Happening Before It Becomes a Crisis</h2>
+      <p>Teton gives senior living care teams continuous visibility into resident health patterns, so they can act early instead of reacting late.</p>
+    </div>
+
+    <div class="lp-section">
+      <h3>The Problem</h3>
+      <p>Most senior living operators are flying blind between scheduled check-ins. Staff learn about declining mobility, disrupted sleep, or behavioral changes only after a fall, an ER visit, or a family complaint. The tools available today are reactive by design: they detect events that have already happened, then send an alert. Meanwhile, the patterns that preceded those events were visible for days or weeks, and nobody had a way to see them.</p>
+    </div>
+
+    <div class="lp-section">
+      <h3>How Teton Works</h3>
+      <p>Teton installs a small sensor and compute unit in resident rooms that continuously interprets activity and health signals, including mobility, sleep quality, respiration, and staff interactions. All AI processing happens on the device itself. No video ever leaves the room, and residents wear nothing. Care teams receive actionable insights through the Teton app, surfacing the slow-moving changes that precede falls, hospitalizations, and decline. The result is a care team that intervenes on Tuesday instead of responding to a crisis on Saturday.</p>
+    </div>
+
+    <div class="lp-section">
+      <h3>Proof</h3>
+      <p><strong>74% fewer falls at Sagora Senior Living.</strong> Sagora, a Texas-based operator, deployed Teton across two communities and saw falls drop by nearly three-quarters, with a 95% improvement in response time to the incidents that did occur.</p>
+      <p><strong>99.8% resident and family adoption at Aquinas Senior Living.</strong> Aquinas rolled out Teton at Heritage Springs in Pennsylvania, then expanded to Wynwood House. Near-universal adoption from residents and families, with zero wearables to manage and zero privacy concerns to navigate.</p>
+    </div>
+
+    <div class="lp-cta">
+      <p style="margin-bottom:16px"><strong>Book 15 Minutes With Our Team at NIC</strong></p>
+      <p style="margin-bottom:20px; color: #666; font-size: 14px;">We're setting aside time during NIC Fall 2026 to walk operators through live platform demos. Spots are limited.</p>
+      <a href="#" class="btn">Book Your Meeting</a>
+      <p style="margin-top: 24px; color: #999; font-size: 13px;">Customer logos: Sagora Senior Living, Aquinas Senior Living, [additional operator logos]</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const tabGroup = this.closest('.tabs');
+    const page = this.closest('.page');
+    tabGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    page.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById(this.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

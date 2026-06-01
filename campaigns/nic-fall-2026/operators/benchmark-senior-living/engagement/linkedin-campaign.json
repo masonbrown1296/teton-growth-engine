@@ -1,0 +1,15 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Benchmark Senior Living",
+  "campaign": "NIC Fall 2026 Awareness",
+  "date_range": "2026-09-22 to 2026-10-05",
+  "matched_audience_size": 47,
+  "impressions": 1680,
+  "clicks": 38,
+  "engagement_rate": "2.26%",
+  "spend": 1240.00,
+  "engaged_contacts": [
+    {"name": "Moulay Elalamy", "title": "VP of IT", "action": "clicked whitepaper link: 'From Reactive to Proactive: The Data Layer Senior Living Is Missing'"},
+    {"name": "Heather Frahm", "title": "CMO and EVP", "action": "liked company post about Aquinas case study"}
+  ]
+}

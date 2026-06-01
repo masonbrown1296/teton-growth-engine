@@ -1,0 +1,46 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Bickford Senior Living",
+  "sessions": [
+    {
+      "date": "2026-08-13",
+      "contact": "Andy Eby",
+      "identified_by": "demo request form submission",
+      "pages_visited": ["homepage", "product-overview", "how-it-works", "pricing"],
+      "time_on_site": "8:14",
+      "demo_request": true
+    },
+    {
+      "date": "2026-08-25",
+      "contact": "Andy Eby",
+      "identified_by": "email click tracking",
+      "pages_visited": ["august-health-integration", "privacy-architecture", "sagora-case-study"],
+      "time_on_site": "5:37",
+      "demo_request": false
+    },
+    {
+      "date": "2026-09-18",
+      "contact": "Andy Eby",
+      "identified_by": "retargeting ad click",
+      "pages_visited": ["product-overview", "pricing"],
+      "time_on_site": "3:22",
+      "demo_request": false
+    },
+    {
+      "date": "2026-09-30",
+      "contact": "Simone Pena",
+      "identified_by": "LinkedIn ad click",
+      "pages_visited": ["sagora-case-study", "aquinas-case-study"],
+      "time_on_site": "4:05",
+      "demo_request": false
+    },
+    {
+      "date": "2026-10-02",
+      "contact": "unknown (Bickford IP range)",
+      "identified_by": "IP matching",
+      "pages_visited": ["homepage", "how-it-works"],
+      "time_on_site": "1:48",
+      "demo_request": false
+    }
+  ]
+}

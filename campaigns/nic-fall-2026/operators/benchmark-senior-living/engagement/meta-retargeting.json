@@ -1,0 +1,38 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Benchmark Senior Living",
+  "campaign": "NIC Fall 2026 Pre-Event Retargeting",
+  "date_range": "2026-09-15 to 2026-10-05",
+  "impressions": 1243,
+  "clicks": 31,
+  "ctr": "2.49%",
+  "spend": 847.20,
+  "top_creative": "fall-reduction-proof-sagora",
+  "creative_breakdown": [
+    {
+      "creative_id": "proof-sagora-74pct",
+      "headline": "74% Fewer Falls. No Cameras. No Wearables.",
+      "impressions": 412,
+      "clicks": 16,
+      "ctr": "3.88%"
+    },
+    {
+      "creative_id": "category-physical-ai",
+      "headline": "What If Your Building Could See What Your Staff Can't?",
+      "impressions": 431,
+      "clicks": 9,
+      "ctr": "2.09%"
+    },
+    {
+      "creative_id": "proof-aquinas-adoption",
+      "headline": "99.8% Adoption. Zero Wearables. One Sensor Per Room.",
+      "impressions": 400,
+      "clicks": 6,
+      "ctr": "1.50%"
+    }
+  ],
+  "clicked_contacts": [
+    {"name": "Moulay Elalamy", "title": "VP of IT", "clicks": 4, "creatives_clicked": ["proof-sagora-74pct", "category-physical-ai"]},
+    {"name": "John Hartmayer", "title": "COO and EVP", "clicks": 2, "creatives_clicked": ["proof-sagora-74pct"]}
+  ]
+}

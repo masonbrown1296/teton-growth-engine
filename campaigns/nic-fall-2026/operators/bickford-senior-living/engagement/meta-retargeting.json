@@ -1,0 +1,39 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "operator": "Bickford Senior Living",
+  "campaign": "NIC Fall 2026 Pre-Event Retargeting",
+  "date_range": "2026-09-15 to 2026-10-05",
+  "impressions": 1876,
+  "clicks": 54,
+  "ctr": "2.88%",
+  "spend": 1132.50,
+  "top_creative": "proactive-vs-reactive",
+  "creative_breakdown": [
+    {
+      "creative_id": "proactive-vs-reactive",
+      "headline": "Fall Detection Tells You What Happened. We Tell You What's Coming.",
+      "impressions": 620,
+      "clicks": 24,
+      "ctr": "3.87%"
+    },
+    {
+      "creative_id": "august-health-integration",
+      "headline": "Already on August Health? Add Ambient Intelligence in One Click.",
+      "impressions": 645,
+      "clicks": 18,
+      "ctr": "2.79%"
+    },
+    {
+      "creative_id": "proof-sagora-74pct",
+      "headline": "74% Fewer Falls. No Cameras. No Wearables.",
+      "impressions": 611,
+      "clicks": 12,
+      "ctr": "1.96%"
+    }
+  ],
+  "clicked_contacts": [
+    {"name": "Andy Eby", "title": "CEO", "clicks": 7, "creatives_clicked": ["proactive-vs-reactive", "proactive-vs-reactive", "august-health-integration"]},
+    {"name": "Simone Pena", "title": "VP of Sales and Marketing", "clicks": 3, "creatives_clicked": ["proof-sagora-74pct", "august-health-integration"]},
+    {"name": "Joe Eby", "title": "President", "clicks": 2, "creatives_clicked": ["proactive-vs-reactive"]}
+  ]
+}

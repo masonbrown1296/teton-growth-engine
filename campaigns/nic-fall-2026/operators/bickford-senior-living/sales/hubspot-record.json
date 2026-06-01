@@ -1,0 +1,15 @@
+{
+  "_notice": "SIMULATED DATA FOR DEMONSTRATION",
+  "company": "Bickford Senior Living",
+  "lifecycle_stage": "opportunity",
+  "deal_stage": "stalled",
+  "lead_score": 78,
+  "days_since_last_activity": 42,
+  "first_touch": "2026-08-05",
+  "first_touch_source": "LinkedIn ad",
+  "demo_requested": true,
+  "demo_completed": false,
+  "intro_call_completed": true,
+  "assigned_rep": "[Sales rep]",
+  "notes": "High value target. CEO engaged but went dark after intro call. Budget cycle concern. SafelyYou switching cost. Re-engage at NIC Fall 2026."
+}
